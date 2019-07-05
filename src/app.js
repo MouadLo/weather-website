@@ -48,9 +48,10 @@ app.get('/help', (req, res) => {
 })
 
 app.get('/geo', (req, res) => {
-    geolocation(req.ip, (error, body) => {
+    var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
+    geolocation(ip, (error, body) => {
         if(error){
-            console.log(req.ip)
+            console.log(ip)
             return  res.render('404-page', {
                 title: '404',
                 name: 'Mouad Lousimi',
