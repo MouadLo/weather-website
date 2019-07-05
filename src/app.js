@@ -4,6 +4,8 @@ const hbs = require('hbs')
 
 const geocode = require('./utils/geocode')
 const forecast = require('./utils/forecast')
+const geolocation = require('./utils/geolocation')
+
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -45,6 +47,41 @@ app.get('/help', (req, res) => {
     })
 })
 
+app.get('/geo', (req, res) => {
+    geolocation(req.ip, (error, body) => {
+        if(error){
+            console.log(req.ip)
+            return  res.render('404-page', {
+                title: '404',
+                name: 'Mouad Lousimi',
+                errorMessage: error
+            })
+        }
+        geocode(body.city, (error, { latitude,longitude, location } = {}) => {
+            if(error){
+                return res.send({
+                    error
+                })
+            } 
+            forecast(latitude,longitude, (error, forecastData) => {
+                if(error){
+                    return res.send({
+                        error
+                    })
+                }
+
+                res.render('geo', {
+                    address: req.query.address,
+                    forecast: forecastData,
+                    location
+                })
+            })     
+        })
+    })
+
+})
+
+
 
 app.get('/weather', (req, res) => {
 
@@ -53,13 +90,14 @@ app.get('/weather', (req, res) => {
             error: 'You must provide address !'
         })
     } else {
+    
         geocode(req.query.address, (error, { latitude,longitude, location } = {}) => {
             if(error){
                 return res.send({
                     error
                 })
             } 
-        
+    
             forecast(latitude,longitude, (error, forecastData) => {
                 if(error){
                     return res.send({
@@ -71,10 +109,9 @@ app.get('/weather', (req, res) => {
                     forecast: forecastData,
                     location
                 })
-            })
-        
-           
+            })     
         })
+
     }
 })
 
