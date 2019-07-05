@@ -54,7 +54,7 @@ app.get('/geo', (req, res) => {
             return  res.render('404-page', {
                 title: '404',
                 name: 'Mouad Lousimi',
-                errorMessage: error
+                errorMessage: error + req.ip
             })
         }
         geocode(body.city, (error, { latitude,longitude, location } = {}) => {
