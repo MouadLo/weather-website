@@ -72,6 +72,7 @@ app.get('/geo', (req, res) => {
                 }
 
                 res.render('geo', {
+                    title: 'Geolocation',
                     address: req.query.address,
                     forecast: forecastData,
                     location
